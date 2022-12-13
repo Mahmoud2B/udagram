@@ -19,3 +19,7 @@ Then here are the jobs/workflow:
 
 ![enter image description here](https://github.com/Mahmoud2B/udagram/blob/master/Screenshots/Circle%20CI_CD-Map%201.png?raw=true)
 
+Also please note this pipeline contains the secret env variables
+
+![enter image description here](https://github.com/Mahmoud2B/udagram/blob/master/Screenshots/circle-envs.png?raw=true)
+
