@@ -51,6 +51,7 @@ jobs:
       - run:
           name: Deploy API
           command: |
+            cd udagram/udagram-api
             eb setenv POSTGRES_USERNAME=${POSTGRES_USERNAME}
             eb setenv POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             eb setenv POSTGRES_HOST=${POSTGRES_HOST}
@@ -73,15 +74,15 @@ jobs:
 workflows:
   udagram:
     jobs:
-      - build
-      - hold:
-          filters:
-            branches:
-              only:
-                - master
-          type: approval
-          requires:
-            - build
-      - deploy:
-          requires:
-            - hold
+      # - build
+      # - hold:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     type: approval
+      #     requires:
+      #       - build
+      - deploy
+          # requires:
+          #   - hold
