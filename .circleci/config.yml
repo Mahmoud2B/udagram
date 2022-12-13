@@ -51,12 +51,14 @@ jobs:
       - eb/setup
       - aws-cli/setup
       - checkout
-      - run:
-          name: Deploy App
-          command: |
-            npm run api:deploy
+      # Deploy the API application to elastic beanstalk
       - run:
           name: Deploy API
+          command: |
+            npm run api:deploy
+      # Deploy the ionic app to s3
+      - run:
+          name: Deploy Frontend
           command: |
             npm run frontend:deploy
 
