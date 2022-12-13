@@ -6,75 +6,83 @@ orbs:
   aws-cli: circleci/aws-cli@3.1.1
   # different jobs are calles later in the workflows sections
 jobs:
-  # build:
-  #   docker:
-  #     # the base image can run most needed actions with orbs
-  #     - image: 'cimg/node:14.15'
-  #   steps:
-  #     # install node and checkout code
-  #     - node/install:
-  #         node-version: '14.15'
-  #     - checkout
-  #     # Use root level package.json to install dependencies in the frontend app
-  #     - run:
-  #         name: Install Front-End Dependencies
-  #         command: |
-  #           npm run frontend:install
-  #     - run:
-  #         name: Front-End Lint
-  #         command: |
-  #           npm run frontend:lint
-  #     - run:
-  #         name: Front-End Build
-  #         command: |
-  #           npm run frontend:build
-  #     - run:
-  #         name: Install API Dependencies
-  #         command: |
-  #           npm run api:install
-  #     - run:
-  #         name: API Build
-  #         command: |
-  #           npm run api:build
-  # # deploy step will run only after manual approval
+  build:
+    docker:
+      # the base image can run most needed actions with orbs
+      - image: 'cimg/node:14.15'
+    steps:
+      # install node and checkout code
+      - node/install:
+          node-version: '14.15'
+      - checkout
+      # Use root level package.json to install dependencies in the frontend app
+      - run:
+          name: Install Front-End Dependencies
+          command: |
+            npm run frontend:install
+      - run:
+          name: Front-End Lint
+          command: |
+            npm run frontend:lint
+      - run:
+          name: Front-End Build
+          command: |
+            npm run frontend:build
+      - run:
+          name: Install API Dependencies
+          command: |
+            npm run api:install
+      - run:
+          name: API Build
+          command: |
+            npm run api:build
+  # deploy step will run only after manual approval
   deploy:
     docker:
       - image: 'cimg/base:stable'
       # more setup needed for aws, node, elastic beanstalk
     steps:
-      # - node/install:
-      #     node-version: '14.15'
+      - node/install:
+          node-version: '14.15'
       - eb/setup
-      # - aws-cli/setup
+      - aws-cli/setup
       - checkout
-      # test env var
+      # Send env variables to eb
       - run:
-          name: test env var
+          name: Deploy API
           command: |
-            echo ${AWS_BUCKET}
+            eb setenv POSTGRES_USERNAME=${POSTGRES_USERNAME}
+            eb setenv POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            eb setenv POSTGRES_HOST=${POSTGRES_HOST}
+            eb setenv POSTGRES_DB=${POSTGRES_DB}
+            eb setenv AWS_BUCKET=${AWS_BUCKET}
+            eb setenv AWS_REGION=${AWS_REGION}
+            eb setenv AWS_PROFILE=${AWS_PROFILE}
+            eb setenv JWT_SECRET=${JWT_SECRET}
+            eb setenv URL=${URL}
       # Deploy the API application to elastic beanstalk
-      # - run:
-      #     name: Deploy API
-      #     command: |
-      #       npm run api:deploy
-      # # Deploy the ionic app to s3
-      # - run:
-      #     name: Deploy Frontend
-      #     command: |
-      #       npm run frontend:deploy
+      - run:
+          name: Deploy API
+          command: |
+            npm run api:deploy
+      # Deploy the ionic app to s3
+      - run:
+          name: Deploy Frontend
+          command: |
+            npm run frontend:deploy
 
 workflows:
   udagram:
     jobs:
-      - deploy
-      # - build
-      # - hold:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      #     type: approval
-      #     requires:
-      #       - build
-      #     requires:
-      #       - hold
+      - build
+      - hold:
+          filters:
+            branches:
+              only:
+                - master
+          type: approval
+          requires:
+            - build
+      - deploy:
+          requires:
+            - hold
