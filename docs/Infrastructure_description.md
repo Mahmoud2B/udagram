@@ -7,6 +7,7 @@ Udagram project AWS resources are:
 3.  An Elastic Beanstalk environment
 
 Here's how it works
+
 ![enter image description here](https://github.com/Mahmoud2B/udagram/blob/master/Screenshots/Screenshot%202022-12-13%20125150.png?raw=true)
 
 ### AWS RDS (PostgreSQL)
