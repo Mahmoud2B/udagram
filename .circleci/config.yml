@@ -47,7 +47,7 @@ jobs:
       - eb/setup
       - aws-cli/setup
       - checkout
-      # Send env variables to eb
+      # Send env variables to elastic beanstalk
       - run:
           name: Set env variables
           command: |
